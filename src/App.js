@@ -28,8 +28,22 @@ function Box(props) {
 
 
 function App() {
+
+  dcontrols = new DeviceOrientationControls ( camera, renderer.domElement );
+
+  instructions.addEventListener( 'touchstart', function (evt) {
+				
+                dcontrols.enabled = true;
+                evt.preventDefault();
+				console.log ('touch test');
+                dcontrols.enabled = true;
+                instructions.style.display = 'none';
+                blocker.style.display = 'none';
+
+			}, false );
+
   return (
-   
+    
     <Canvas>
       <ambientLight intensity={0.5} />
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
