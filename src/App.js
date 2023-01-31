@@ -59,7 +59,7 @@ function App() {
       <Sky distance={45} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
       
       <Items/>
-      <OrbitControls/>
+      
       
     </Canvas>
 
