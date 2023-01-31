@@ -23,9 +23,10 @@ function Item({ index, position, scale, ...props }){
 }
 
 
-function Items({ w = 4, gap = 6 }) {
+function Items({ w = 4, gap = 4 }) {
   const [images, setImages] = useState(["https://scontent-jnb1-1.xx.fbcdn.net/v/t1.6435-9/82449134_1174425096234384_2141610640999972864_n.png?_nc_cat=1&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=CFOKesJgq6AAX9xAhDM&_nc_ht=scontent-jnb1-1.xx&oh=00_AfBaJeGkoL8mBdszkQuTYu3spV5x3CVwtiWgnEVtmmo4EQ&oe=64009853", "https://scontent-jnb1-1.xx.fbcdn.net/v/t1.6435-9/82449134_1174425096234384_2141610640999972864_n.png?_nc_cat=1&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=CFOKesJgq6AAX9xAhDM&_nc_ht=scontent-jnb1-1.xx&oh=00_AfBaJeGkoL8mBdszkQuTYu3spV5x3CVwtiWgnEVtmmo4EQ&oe=64009853", "https://scontent-jnb1-1.xx.fbcdn.net/v/t1.6435-9/82449134_1174425096234384_2141610640999972864_n.png?_nc_cat=1&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=CFOKesJgq6AAX9xAhDM&_nc_ht=scontent-jnb1-1.xx&oh=00_AfBaJeGkoL8mBdszkQuTYu3spV5x3CVwtiWgnEVtmmo4EQ&oe=64009853", "https://scontent-jnb1-1.xx.fbcdn.net/v/t1.6435-9/82449134_1174425096234384_2141610640999972864_n.png?_nc_cat=1&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=CFOKesJgq6AAX9xAhDM&_nc_ht=scontent-jnb1-1.xx&oh=00_AfBaJeGkoL8mBdszkQuTYu3spV5x3CVwtiWgnEVtmmo4EQ&oe=64009853"])
   const { width } = useThree((device) => device.viewport)
+  console.log(width)
   const xW = w + gap
   return (
     <ScrollControls horizontal damping={1} pages={(width - xW + images.length * xW) / width}>
@@ -34,7 +35,7 @@ function Items({ w = 4, gap = 6 }) {
         
         return(
           <group key={'group-'+i}>
-              <Item key={i} index={i} position={[i * xW, 0, 0]} scale={[w, 4, 1]} url={url} />
+              <Item key={i} index={i} position={[i * xW, 0, 0]} scale={[(width <= 4.80 ? (width * 0.7) : w), (width <= 4.80 ? (width * 0.7) : 4), 1]} url={url} />
               <Text key={'text-'+i} index={i} position={[i * xW, -2.5, 0]} fontSize={0.5} color={'black'}>Welcome</Text>
           </group>
         
