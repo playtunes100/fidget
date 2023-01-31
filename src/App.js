@@ -2,7 +2,7 @@
 import './App.css';
 import { useRef, useState } from 'react'
 import { Canvas, useThree} from '@react-three/fiber'
-import { Sky, Image,Text, ScrollControls, Scroll, useScroll} from '@react-three/drei'
+import { Sky, Image,Text, ScrollControls, Scroll, useScroll, OrbitControls} from '@react-three/drei'
 
 function Item({ index, position, scale, ...props }){
   // This reference gives us direct access to the THREE.Mesh object
@@ -10,13 +10,15 @@ function Item({ index, position, scale, ...props }){
   // Hold state for hovered and clicked events
   const [hovered, hover] = useState(false)
   const [clicked, click] = useState(false)
+
+  
   
 
   
   
 
   return (
-  <Image ref={ref} {...props} position={position} scale={scale} onClick={click} onPointerOver={() => hover(true)} onPointerOut={() => hover(false)} />
+  <Image ref={ref} {...props} position={position} scale={scale} onClick={(event) => ref.current.material.grayscale = 1} onPointerOver={() => hover(true)} onPointerOut={() => hover(false)} />
   
   
   )
@@ -54,11 +56,10 @@ function App() {
   return (
     
     <Canvas>
-      <Sky distance={450} sunPosition={[0, 1, 0]} inclination={0} azimuth={180} />
-      <ambientLight intensity={0.5} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <pointLight position={[-10, -10, -10]} />
+      <Sky distance={45} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
+      
       <Items/>
+      <OrbitControls/>
       
     </Canvas>
 
