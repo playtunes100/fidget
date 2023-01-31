@@ -4,9 +4,9 @@
 
 Canvas {
   display: block;
-  width: 876px;
+  width: 100%;
   touch-action: none;
-  height: 637px;
+  height: 100%;
 }
 
 
