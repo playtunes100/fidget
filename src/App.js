@@ -1,4 +1,3 @@
-
 import './App.css';
 import { useRef, useState } from 'react'
 import { Canvas, useThree} from '@react-three/fiber'
@@ -31,7 +30,7 @@ function Ambiance() {
 
 function Items({ w = 4, gap = 4 }) {
 
-  const [images, setImages] = useState([
+  const [images] = useState([
   {
     id: 1,
     src: spinner,
@@ -92,6 +91,7 @@ function App() {
   }
   return (
     <Canvas onClick={playAmbiance}>
+      
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
       
       <Items />
