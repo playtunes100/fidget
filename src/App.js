@@ -1,20 +1,23 @@
 import './App.css';
+import * as THREE from 'three'
 import { useRef, useState } from 'react'
-import { Canvas, useThree} from '@react-three/fiber'
-import { Sky, PositionalAudio, Image, Text, ScrollControls, Scroll} from '@react-three/drei'
+import { Canvas, useThree, useLoader} from '@react-three/fiber'
+import { Sky, PositionalAudio, TransformControls ,Text, Circle} from '@react-three/drei'
 import spinner from './assets/images/spinner.png'
 import pop from './assets/images/pop-it.png'
 import key from './assets/images/key.png'
 import naked from './assets/images/naked.png'
 import forest from './assets/sounds/forest.ogg'
 
-function Item({ index, position, scale, ...props }){
+function Item({ index, position, img, scale, ...props }){
   // This reference gives us direct access to the THREE.Mesh object
   const ref = useRef()
 
   
   return (
-  <Image ref={ref} {...props} position={position} scale={scale} onPointerOver={(event) => ref.current.material.grayscale = 1} onPointerOut={(event) => ref.current.material.grayscale = 0} />
+  <Circle position={position} scale={scale}>
+    <meshBasicMaterial transparent attach="material" map={useLoader(THREE.TextureLoader, img)}  />
+  </Circle>
   )
 }
 
@@ -28,7 +31,7 @@ function Ambiance() {
 }
 
 
-function Items({ w = 4, gap = 4 }) {
+function Wheel() {
 
   const [images] = useState([
   {
@@ -56,29 +59,62 @@ function Items({ w = 4, gap = 4 }) {
     desc: "Interactive Naked Insurance ad",
   }
   ,
+  {
+    id: 5,
+    src: spinner,
+    url: "/spinner",
+    desc: "Spinner",
+  },
+  {
+    id: 6,
+    src: pop,
+    url: "/pop",
+    desc: "Pop It",
+  },
+  {
+    id: 7,
+    src: key,
+    url: "/keyboard",
+    desc: "Mechanical Keyboard",
+  },
+  {
+    id: 8,
+    src: naked,
+    url: "/naked",
+    desc: "Interactive Naked Insurance ad",
+  }
+  ,
 ])
 
+const [startAngl, setStartAngl] = useState(0)
+const [angl, setAngl] = useState(0)
+
+  const moveWheel = (e) => {
+    
+      setAngl(Math.atan2(e.object.position.y, e.object.position.x) - startAngl)
+      e.eventObject.rotateZ(angl / 10)
+      console.log("position : "+ e.eventObject.position.x)
+    
+    
+    
+  }
+  const pointerDown = (e) => {
+    
+    setStartAngl(Math.atan2(e.object.position.y, e.object.position.x) - angl)
+  }
 
   const { width } = useThree((device) => device.viewport)
+  console.log(width)
   
-  const xW = w + gap
+  const radius = width <= 4.8 ? (width * 0.3) : 2;
+  const radian_interval = (2.0 * Math.PI) / images.length;
   return (
-    <ScrollControls horizontal damping={1} pages={(width - xW + images.length * xW) / width}>
-      
-      <Scroll>
+    <group onPointerDown={(e) => pointerDown(e)  } onPointerMove={(e) => moveWheel(e)} >
         {images.map((url, i) => {
         return(
-          <group key={'group-'+i}>
-              <Item key={i} index={i} transparent position={[i * xW, 0, 0]} scale={[(width <= 4.80 ? (width * 0.7) : w), (width <= 4.80 ? (width * 0.7) : 4), 1]} url={url.src} />
-              <Text key={'text-'+i} index={i} position={[i * xW, -2.5, 0]} fontSize={0.5} color={'black'}>{url.desc}</Text>
-          </group>
-        
-        
+          <Item key={"item-"+i} img={url.src} scale={width <= 4.8 ? width * 0.09 : 0.6 } index={"item-"+i} position={[(Math.cos(radian_interval * i) * radius), (Math.sin(radian_interval * i) * radius), 0]}  />
         )})}
-
-        
-      </Scroll>
-    </ScrollControls>
+    </group>
   )
 }
 
@@ -93,9 +129,12 @@ function App() {
     <Canvas onClick={playAmbiance}>
       
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
+      <Wheel />
       
-      <Items />
       { canplay && (<Ambiance />)}
+      
+      <Text scale={0.5} position={[0,3,0]}>Ambiance On</Text>
+      
     </Canvas>
 
   );
