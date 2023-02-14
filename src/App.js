@@ -1,8 +1,8 @@
 import './App.css';
 import * as THREE from 'three'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Canvas, useThree, useLoader} from '@react-three/fiber'
-import { Sky, PositionalAudio, TransformControls ,Text, Circle} from '@react-three/drei'
+import { Sky, PositionalAudio ,Text, Circle} from '@react-three/drei'
 import spinner from './assets/images/spinner.png'
 import pop from './assets/images/pop-it.png'
 import key from './assets/images/key.png'
@@ -11,7 +11,7 @@ import forest from './assets/sounds/forest.ogg'
 
 function Item({ index, position, img, scale, ...props }){
   // This reference gives us direct access to the THREE.Mesh object
-  const ref = useRef()
+  
 
   
   return (
@@ -120,14 +120,16 @@ const [angl, setAngl] = useState(0)
 }
 
 
-function App() {     
+function App() {  
+  
   const [canplay, setCanplay] = useState(false)
   const playAmbiance = () => {
     console.log("i was clicked")
     setCanplay(true)
   }
   return (
-    <Canvas onClick={playAmbiance}>
+    <div style={{ width: window.innerWidth, height: window.innerHeight }}>
+    <Canvas onClick={playAmbiance} scroll = "false" >
       
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
       <Wheel />
@@ -137,7 +139,7 @@ function App() {
       <Text scale={0.5} position={[0,3,0]}>Ambiance On</Text>
       
     </Canvas>
-
+    </div>
   );
 }
 
