@@ -104,12 +104,13 @@ const [angl, setAngl] = useState(0)
   }
 
   const { width } = useThree((device) => device.viewport)
-  console.log(width)
   
+  console.log(width)
+  console.log()
   const radius = width <= 4.8 ? (width * 0.3) : 2;
   const radian_interval = (2.0 * Math.PI) / images.length;
   return (
-    <group onPointerDown={(e) => pointerDown(e)  } onPointerMove={(e) => moveWheel(e)} >
+    <group onPointerDown={(e) => pointerDown(e)  } onPointerMove={(e) => moveWheel(e) } >
         {images.map((url, i) => {
         return(
           <Item key={"item-"+i} img={url.src} scale={width <= 4.8 ? width * 0.09 : 0.6 } index={"item-"+i} position={[(Math.cos(radian_interval * i) * radius), (Math.sin(radian_interval * i) * radius), 0]}  />
