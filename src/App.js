@@ -90,27 +90,28 @@ const [startAngl, setStartAngl] = useState(0)
 const [angl, setAngl] = useState(0)
 
   const moveWheel = (e) => {
-    
-      setAngl(Math.atan2(e.object.position.y, e.object.position.x) - startAngl)
-      e.eventObject.rotateZ(angl / 10)
-      console.log("position : "+ e.eventObject.position.x)
+      console.log("mouse y: "+ (e.clientX - e.object.position.y * 15) + " mouse x: "+ (e.clientX - e.object.position.x * 15) )
+      console.log()
+      setAngl(Math.atan2(e.pointer.y, e.pointer.x) - startAngl)
+      e.eventObject.rotateZ(angl * 0.03)
+      
     
     
     
   }
   const pointerDown = (e) => {
     
-    setStartAngl(Math.atan2(e.object.position.y, e.object.position.x) - angl)
+    setStartAngl(Math.atan2(e.pointer.y, e.pointer.x) - angl)
   }
 
   const { width } = useThree((device) => device.viewport)
   
   console.log(width)
-  console.log()
+  
   const radius = width <= 4.8 ? (width * 0.3) : 2;
   const radian_interval = (2.0 * Math.PI) / images.length;
   return (
-    <group onPointerDown={(e) => pointerDown(e)  } onPointerMove={(e) => moveWheel(e) } >
+    <group onMouseDown={(e) => pointerDown(e)  } onPointerMove={(e) => moveWheel(e) }  >
         {images.map((url, i) => {
         return(
           <Item key={"item-"+i} img={url.src} scale={width <= 4.8 ? width * 0.09 : 0.6 } index={"item-"+i} position={[(Math.cos(radian_interval * i) * radius), (Math.sin(radian_interval * i) * radius), 0]}  />
@@ -121,14 +122,14 @@ const [angl, setAngl] = useState(0)
 
 
 function App() {  
-  
+  const [size, setSize] = useState({height: window.innerHeight, width: window.innerWidth})
   const [canplay, setCanplay] = useState(false)
   const playAmbiance = () => {
-    console.log("i was clicked")
+    
     setCanplay(true)
   }
   return (
-    <div style={{ width: window.innerWidth, height: window.innerHeight }}>
+    <div style={{ width: size.width, height: size.height }}>
     <Canvas onClick={playAmbiance} scroll = "false" >
       
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
