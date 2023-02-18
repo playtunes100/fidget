@@ -129,7 +129,7 @@ function App() {
     setCanplay(true)
   }
   return (
-    <div style={{ width: size.width, height: size.height }}>
+    <div className='canvas-parent' style={{ width: size.width, height: size.height }}>
     <Canvas onClick={playAmbiance} scroll = "false" >
       
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
