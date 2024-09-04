@@ -2,7 +2,7 @@ import './App.css';
 import * as THREE from 'three'
 import { useState, useRef } from 'react'
 import { Canvas, useThree, useLoader, useFrame} from '@react-three/fiber'
-import { Sky, PositionalAudio ,Text, Box,  ScrollControls, OrbitControls ,Scroll, useScroll} from '@react-three/drei'
+import { Sky, PositionalAudio ,Text, Box,  ScrollControls, OrbitControls ,Scroll, useScroll, ScreenSizer} from '@react-three/drei'
 import spinner from './assets/images/spinner.png'
 import pop from './assets/images/pop-it.png'
 import key from './assets/images/key.png'
@@ -132,17 +132,19 @@ function App() {
   }
   return (
     <div className='canvas-parent' style={{ width: size.width, height: size.height }}>
-    <Canvas onClick={playAmbiance} scroll = "false" >
-      
-      <Sky azimuth={100} inclination={0.8} distance={1000} mieCoefficient={0} />
-      <Wheel />
-      
-      { canplay && (<Ambiance />)}
-      
-      <Text scale={0.5} position={[0,3,0]}>Ambiance On</Text>
-      <OrbitControls />
-      
-    </Canvas>
+      <ScreenSizer>
+        <Canvas onClick={playAmbiance} scroll = "false" >
+          
+          <Sky azimuth={100} inclination={0.8} distance={1000} mieCoefficient={0} />
+          <Wheel />
+          
+          { canplay && (<Ambiance />)}
+          
+          <Text scale={0.5} position={[0,3,0]}>Ambiance On</Text>
+          <OrbitControls />
+          
+        </Canvas>
+      </ScreenSizer>
     </div>
   );
 }
