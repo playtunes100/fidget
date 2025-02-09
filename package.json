@@ -4,6 +4,7 @@
   "homepage": "https://playtunes100.github.io/fidget",
   "private": true,
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@react-three/drei": "^9.56.5",
     "@react-three/fiber": "^8.10.1",
     "@testing-library/jest-dom": "^5.16.5",
