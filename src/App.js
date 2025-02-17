@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { useState ,useRef} from 'react'
 import { Canvas, useThree, useFrame, useLoader} from '@react-three/fiber'
 import { Sky, PositionalAudio ,Text, Circle} from '@react-three/drei'
-
+import { useDrag } from '@use-gesture/react'
 
 
 import spinner from './assets/images/spinner.png'
@@ -37,6 +37,7 @@ function Ambiance() {
 
 function Wheel() {
   const wheelRef = useRef(null)
+  const [wheelSpeed, setWheelspeed] = useState(null)
   const [images] = useState([
   {
     id: 1,
@@ -89,31 +90,45 @@ function Wheel() {
   }
   ,
 ])
-
-const [angl, setAngl] = useState(0)
-
-  const moveWheel = (e) => {
-      console.log("mouse y: "+ ((e.offsetY)) + " mouse x: "+ ((e.offsetX)))
-      //console.log(`object x: ${e.offsetX}`)
-      setAngl((Math.atan2(-(e.offsetY - (window.innerHeight/2)), (e.offsetX - (window.innerWidth/2)))) * (180 / Math.PI))
-      console.log(`angle: ${(((angl + 360) % 360 ) * (Math.PI / 180))}`)
-      e.eventObject.rotation.setFromVector3(new THREE.Vector3( 0, 0,(((angl + 360) % 360) * (Math.PI / 180))) )
-      
-  }
-
-
-
-
-  const { width } = useThree((device) => device.viewport)
-  
-  
-  const radius = width <= 5.5 ? (width * 0.3) : 2;
+  const { viewport, size } = useThree()
+  const radius = viewport.width <= 5.5 ? (viewport.width * 0.3) : 2;
   const radian_interval = (2.0 * Math.PI) / images.length;
+
+  const bind = useDrag((state) => {
+    if(state.first){
+      setWheelspeed(null)
+    }
+    
+    //angle of mouse position from center of screen in degrees (because by default radians max out at PI then invert)
+    const degrees = Math.atan2(state.xy[0] - (size.width/2), state.xy[1] - (size.height/2)) * (180 / Math.PI)
+    wheelRef.current.rotation.z = (((degrees + 360) % 360) * (Math.PI / 180))
+    
+    wheelRef.current.children.forEach((b,i)=> {
+      b.rotation.z = -(((degrees + 360) % 360) * (Math.PI / 180)) //found this by mistake but i'm gonna keep it, it keeps the icons straight
+    })
+    
+    if(state.last){
+      setWheelspeed((state.velocity[0] + state.velocity[1]))
+      console.log((Math.arstate.movement[0] + state.movement[1]))
+      
+    }
+  })
+
+  //keeps the wheel rotating after mouse/pointer event ends
+  useFrame((_,delta) => {
+    if(wheelSpeed && wheelSpeed > 0.0001){
+      //console.log(wheelSpeed)
+      wheelRef.current.children.forEach((b)=> b.rotation.z -=(wheelSpeed * delta))
+      wheelRef.current.rotation.z += wheelSpeed * delta
+      const newSpeed = wheelSpeed * 0.99
+      setWheelspeed(newSpeed)
+    }
+  })
   return (
-    <group ref={wheelRef} onPointerMove={(e) => moveWheel(e) } >
+    <group ref={wheelRef} {...bind()}>
         {images.map((url, i) => {
         return(
-          <Item key={"item-"+i} img={url.src} scale={width <= 5.5 ? width * 0.09 : 0.6 } index={"item-"+i} position={[(Math.cos(radian_interval * i) * radius), (Math.sin(radian_interval * i) * radius), 0]}  />
+          <Item key={"item-"+i} img={url.src} scale={viewport.width <= 5.5 ? viewport.width * 0.09 : 0.6 } index={"item-"+i} position={[(Math.cos(radian_interval * i) * radius), (Math.sin(radian_interval * i) * radius), 0]}  />
         )})}
     </group>
   )

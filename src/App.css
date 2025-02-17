@@ -5,8 +5,10 @@
 Canvas {
   display: grid;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overscroll-behavior: none;
+  touch-action: none;
+  
 
 }
 
