@@ -2,7 +2,7 @@ import './App.css';
 import * as THREE from 'three'
 import { useState ,useRef} from 'react'
 import { Canvas, useThree, useFrame, useLoader} from '@react-three/fiber'
-import { Sky, PositionalAudio ,Text, Circle} from '@react-three/drei'
+import { Sky, PositionalAudio , Circle} from '@react-three/drei'
 import { useDrag } from '@use-gesture/react'
 
 
@@ -10,14 +10,13 @@ import spinner from './assets/images/spinner.png'
 import pop from './assets/images/pop-it.png'
 import key from './assets/images/key.png'
 import naked from './assets/images/naked.png'
+import play from './assets/images/play.png'
+import pause from './assets/images/pause.png'
 import forest from './assets/sounds/forest.ogg'
 
 
 function Item({ index, position, img, scale, ...props }){
   // This reference gives us direct access to the THREE.Mesh object
-  
-
-  
   return (
   <Circle position={position} scale={scale}>
     <meshBasicMaterial transparent attach="material" map={useLoader(THREE.TextureLoader, img)}  />
@@ -27,17 +26,37 @@ function Item({ index, position, img, scale, ...props }){
 
 
 function Ambiance() {
+  const audioRef = useRef(null)
+  const audioMaterialRef = useRef(null)
   
+  const playMap = useLoader(THREE.TextureLoader, play)
+  const pauseMap = useLoader(THREE.TextureLoader, pause)
+  const { viewport } = useThree()
+
+  const playAmbiance = () => {
+    if(audioRef.current.isPlaying){
+      audioRef.current.pause()
+      audioMaterialRef.current.map=playMap
+    }else{
+      audioRef.current.play()
+      audioMaterialRef.current.map=pauseMap
+    }
+  }
 
   return (
-    <PositionalAudio url={forest} autoplay playbackRate={1} loop />
-  )
+    <Circle position={[viewport.width * 0.4, viewport.height * 0.4, 0]} scale={viewport.width <= 5.5 ? viewport.width * 0.09 : 0.6 } onClick={playAmbiance}>
+      <meshBasicMaterial ref={audioMaterialRef} transparent attach="material" map={useLoader(THREE.TextureLoader, play)}  />
+      <PositionalAudio ref={audioRef} url={forest} autoplay={false} playbackRate={1} loop />
+    </Circle>
+    )
 }
 
 
 function Wheel() {
   const wheelRef = useRef(null)
   const [wheelSpeed, setWheelspeed] = useState(null)
+  const [prev, setPrev] = useState(null)
+  const [direction, setDirection] = useState(null)
   const [images] = useState([
   {
     id: 1,
@@ -105,11 +124,15 @@ function Wheel() {
     
     wheelRef.current.children.forEach((b,i)=> {
       b.rotation.z = -(((degrees + 360) % 360) * (Math.PI / 180)) //found this by mistake but i'm gonna keep it, it keeps the icons straight
+      
     })
+    if(!state.last){
+      setPrev(wheelRef.current.rotation.z)
+    }
     
     if(state.last){
       setWheelspeed((state.velocity[0] + state.velocity[1]))
-      console.log((Math.arstate.movement[0] + state.movement[1]))
+      setDirection((wheelRef.current.rotation.z - prev) < 0 ? 1 : -1)
       
     }
   })
@@ -117,9 +140,22 @@ function Wheel() {
   //keeps the wheel rotating after mouse/pointer event ends
   useFrame((_,delta) => {
     if(wheelSpeed && wheelSpeed > 0.0001){
-      //console.log(wheelSpeed)
-      wheelRef.current.children.forEach((b)=> b.rotation.z -=(wheelSpeed * delta))
-      wheelRef.current.rotation.z += wheelSpeed * delta
+      wheelRef.current.children.forEach((b)=> {
+        if(direction === 1){
+        b.rotation.z +=(wheelSpeed * delta)
+      }else{
+        b.rotation.z -=(wheelSpeed * delta)
+      }
+      })
+
+
+      if(direction === 1){
+        wheelRef.current.rotation.z -= wheelSpeed * delta
+      }
+      else{
+        wheelRef.current.rotation.z += wheelSpeed * delta
+      }
+      
       const newSpeed = wheelSpeed * 0.99
       setWheelspeed(newSpeed)
     }
@@ -136,23 +172,12 @@ function Wheel() {
 
 
 function App() {  
-  const [canplay, setCanplay] = useState(false)
-
-
-  const playAmbiance = () => {
-    
-    //setCanplay(true)
-  }
   return (
-    <Canvas onClick={playAmbiance} scroll="false"  >
+    <Canvas scroll="false"  >
       
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
+      <Ambiance />
       <Wheel className={"wheel"} />
-      
-      { canplay && (<Ambiance />)}
-      
-      <Text scale={0.5} position={[0,3,0]}>Ambiance On</Text>
-      
     </Canvas>
   );
 }
