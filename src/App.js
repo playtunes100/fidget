@@ -10,6 +10,8 @@ import spinner from './assets/images/spinner.png'
 import pop from './assets/images/pop-it.png'
 import key from './assets/images/key.png'
 import naked from './assets/images/naked.png'
+import home from './assets/images/home.png'
+import info from './assets/images/info.png'
 import play from './assets/images/play.png'
 import pause from './assets/images/pause.png'
 import forest from './assets/sounds/forest.ogg'
@@ -72,15 +74,15 @@ function Wheel() {
   },
   {
     id: 3,
-    src: key,
-    url: "/keyboard",
-    desc: "Mechanical Keyboard",
+    src: home,
+    url: "/",
+    desc: "Home",
   },
   {
     id: 4,
-    src: naked,
-    url: "/naked",
-    desc: "Interactive Naked Insurance ad",
+    src: info,
+    url: "/about",
+    desc: "About",
   }
   ,
   {
@@ -115,24 +117,29 @@ function Wheel() {
 
   const bind = useDrag((state) => {
     if(state.first){
+      setPrev(0)
       setWheelspeed(null)
+      wheelRef.current.rotation.z += 0 - prev
     }
     
     //angle of mouse position from center of screen in degrees (because by default radians max out at PI then invert)
     const degrees = Math.atan2(state.xy[0] - (size.width/2), state.xy[1] - (size.height/2)) * (180 / Math.PI)
-    wheelRef.current.rotation.z = (((degrees + 360) % 360) * (Math.PI / 180))
+
+    //convert back to radians
+    const radians = (((degrees + 360) % 360) * (Math.PI / 180))
+    if(!state.first){
+      wheelRef.current.rotation.z += radians - prev
+    }
     
     wheelRef.current.children.forEach((b,i)=> {
-      b.rotation.z = -(((degrees + 360) % 360) * (Math.PI / 180)) //found this by mistake but i'm gonna keep it, it keeps the icons straight
-      
+      b.rotation.z = -wheelRef.current.rotation.z //found this by mistake but i'm gonna keep it, it keeps the icons straight  
     })
-    if(!state.last){
-      setPrev(wheelRef.current.rotation.z)
-    }
+    setPrev(radians)
     
     if(state.last){
       setWheelspeed((state.velocity[0] + state.velocity[1]))
-      setDirection((wheelRef.current.rotation.z - prev) < 0 ? 1 : -1)
+      setDirection((radians - prev) < 0 ? 1 : -1)
+      setPrev(0)
       
     }
   })
