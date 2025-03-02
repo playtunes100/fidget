@@ -4,6 +4,7 @@ import { useState ,useRef} from 'react'
 import { Canvas, useThree, useFrame, useLoader} from '@react-three/fiber'
 import { Sky, PositionalAudio , Circle} from '@react-three/drei'
 import { useDrag } from '@use-gesture/react'
+import useSound from 'use-sound';
 
 
 import spinner from './assets/images/spinner.png'
@@ -14,6 +15,7 @@ import home from './assets/images/home.png'
 import info from './assets/images/info.png'
 import play from './assets/images/play.png'
 import pause from './assets/images/pause.png'
+import tick from './assets/sounds/tick-sound.mp3'
 import forest from './assets/sounds/forest.ogg'
 
 
@@ -59,6 +61,7 @@ function Wheel() {
   const [wheelSpeed, setWheelspeed] = useState(null)
   const [prev, setPrev] = useState(null)
   const [direction, setDirection] = useState(null)
+  const [currAngle, setCurrAngle] = useState(null)
   const [images] = useState([
   {
     id: 1,
@@ -111,6 +114,11 @@ function Wheel() {
   }
   ,
 ])
+
+  const [playTick] = useSound(tick, {
+    volume: 0.5,
+  })
+
   const { viewport, size } = useThree()
   const radius = viewport.width <= 5.5 ? (viewport.width * 0.3) : 2;
   const radian_interval = (2.0 * Math.PI) / images.length;
@@ -124,6 +132,11 @@ function Wheel() {
     
     //angle of mouse position from center of screen in degrees (because by default radians max out at PI then invert)
     const degrees = Math.atan2(state.xy[0] - (size.width/2), state.xy[1] - (size.height/2)) * (180 / Math.PI)
+    if((((Math.round(degrees / 45) * 45) % 45) === 0) && (Math.round(degrees / 45) * 45 !== currAngle)){
+      //console.log(`sound :${wheelRef.current.rotation.z}`)
+      playTick()
+      setCurrAngle(Math.round(degrees / 45) * 45)
+    }
 
     //convert back to radians
     const radians = (((degrees + 360) % 360) * (Math.PI / 180))
@@ -154,6 +167,7 @@ function Wheel() {
         b.rotation.z -=(wheelSpeed * delta)
       }
       })
+
 
 
       if(direction === 1){
