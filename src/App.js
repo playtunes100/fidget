@@ -176,6 +176,7 @@ function Wheel() {
       if(((wheelCurrAngle % 45) === 0) && (wheelCurrAngle !== currAngle)){
 
         playTick()
+        navigator.vibrate(40)
         setCurrAngle(wheelCurrAngle)
       }
       
