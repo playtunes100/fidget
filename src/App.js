@@ -7,12 +7,14 @@ import { useDrag } from '@use-gesture/react'
 import useSound from 'use-sound';
 
 
-import spinner from './assets/images/spinner.png'
-import pop from './assets/images/pop-it.png'
-import key from './assets/images/key.png'
-import naked from './assets/images/naked.png'
+import resume from './assets/images/resume.png'
+import projects from './assets/images/projects.png'
+import skills from './assets/images/skills.png'
+import about from './assets/images/user.png'
 import home from './assets/images/home.png'
 import info from './assets/images/info.png'
+import github from './assets/images/github.png'
+import contact from './assets/images/contact.png'
 import play from './assets/images/play.png'
 import pause from './assets/images/pause.png'
 import tick from './assets/sounds/tick-sound.mp3'
@@ -65,15 +67,15 @@ function Wheel() {
   const [images] = useState([
   {
     id: 1,
-    src: spinner,
-    url: "/spinner",
-    desc: "Spinner",
+    src: skills,
+    url: "/skills",
+    desc: "SKills",
   },
   {
     id: 2,
-    src: pop,
-    url: "/pop",
-    desc: "Pop It",
+    src: about,
+    url: "/about",
+    desc: "About Me",
   },
   {
     id: 3,
@@ -84,33 +86,33 @@ function Wheel() {
   {
     id: 4,
     src: info,
-    url: "/about",
-    desc: "About",
+    url: "/info",
+    desc: "About Poject",
   }
   ,
   {
     id: 5,
-    src: spinner,
-    url: "/spinner",
-    desc: "Spinner",
+    src: resume,
+    url: "/resume",
+    desc: "CV",
   },
   {
     id: 6,
-    src: pop,
-    url: "/pop",
-    desc: "Pop It",
+    src: contact,
+    url: "/contact",
+    desc: "Contact Me",
   },
   {
     id: 7,
-    src: key,
-    url: "/keyboard",
-    desc: "Mechanical Keyboard",
+    src: github,
+    url: "github",
+    desc: "GitHub",
   },
   {
     id: 8,
-    src: naked,
-    url: "/naked",
-    desc: "Interactive Naked Insurance ad",
+    src: projects,
+    url: "/projects",
+    desc: "Projects",
   }
   ,
 ])
@@ -132,11 +134,7 @@ function Wheel() {
     
     //angle of mouse position from center of screen in degrees (because by default radians max out at PI then invert)
     const degrees = Math.atan2(state.xy[0] - (size.width/2), state.xy[1] - (size.height/2)) * (180 / Math.PI)
-    if((((Math.round(degrees / 45) * 45) % 45) === 0) && (Math.round(degrees / 45) * 45 !== currAngle)){
-      //console.log(`sound :${wheelRef.current.rotation.z}`)
-      playTick()
-      setCurrAngle(Math.round(degrees / 45) * 45)
-    }
+    
 
     //convert back to radians
     const radians = (((degrees + 360) % 360) * (Math.PI / 180))
@@ -167,16 +165,21 @@ function Wheel() {
         b.rotation.z -=(wheelSpeed * delta)
       }
       })
-
-
-
       if(direction === 1){
         wheelRef.current.rotation.z -= wheelSpeed * delta
       }
       else{
         wheelRef.current.rotation.z += wheelSpeed * delta
       }
+      // plays tick sound when wheel spins
+      const wheelCurrAngle = Math.round((wheelRef.current.rotation.z * (180 / Math.PI)) / 45) * 45 
+      if(((wheelCurrAngle % 45) === 0) && (wheelCurrAngle !== currAngle)){
+
+        playTick()
+        setCurrAngle(wheelCurrAngle)
+      }
       
+      // Adds friction to bring wheel to a stop
       const newSpeed = wheelSpeed * 0.99
       setWheelspeed(newSpeed)
     }
