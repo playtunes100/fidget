@@ -2,7 +2,7 @@ import './App.css';
 import * as THREE from 'three'
 import { useState ,useRef} from 'react'
 import { Canvas, useThree, useFrame, useLoader} from '@react-three/fiber'
-import { Sky, PositionalAudio , Circle} from '@react-three/drei'
+import { Sky, Clouds, Cloud, PositionalAudio, Circle, Stats} from '@react-three/drei'
 import { useDrag } from '@use-gesture/react'
 import useSound from 'use-sound';
 
@@ -176,7 +176,6 @@ function Wheel() {
       if(((wheelCurrAngle % 45) === 0) && (wheelCurrAngle !== currAngle)){
 
         playTick()
-        navigator.vibrate(40)
         setCurrAngle(wheelCurrAngle)
       }
       
@@ -199,8 +198,12 @@ function Wheel() {
 function App() {  
   return (
     <Canvas scroll="false"  >
-      
+      <Stats showPanel={0} className="stats" />
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
+      <Clouds material={THREE.MeshBasicMaterial} >
+        <Cloud segments={40} bounds={[20, 1, 2]} speed={0.1} growth={10} volume={10} color="#c5d7e6" position={[0,-10,-20]} />
+        <Cloud segments={40} bounds={[30, 1, 2]} speed={0.5} growth={10} volume={10} color="white" position={[0,10,-20]} />
+      </Clouds>
       <Ambiance />
       <Wheel className={"wheel"} />
     </Canvas>
