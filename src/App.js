@@ -2,10 +2,10 @@ import './App.css';
 import * as THREE from 'three'
 import { useState ,useRef} from 'react'
 import { Canvas, useThree, useFrame, useLoader} from '@react-three/fiber'
-import { Sky, Clouds, Cloud, PositionalAudio, Circle, Stats} from '@react-three/drei'
+import { Sky, Clouds, Cloud, PositionalAudio, Circle, Edges, Text, Stats} from '@react-three/drei'
 import { useDrag } from '@use-gesture/react'
-import useSound from 'use-sound';
-
+import useSound from 'use-sound'
+import { useRoute, useLocation } from "wouter"
 
 import resume from './assets/images/resume.png'
 import projects from './assets/images/projects.png'
@@ -24,8 +24,9 @@ import forest from './assets/sounds/forest.ogg'
 function Item({ index, position, img, scale, ...props }){
   // This reference gives us direct access to the THREE.Mesh object
   return (
-  <Circle position={position} scale={scale}>
+  <Circle position={position} scale={scale} name={props.name}>
     <meshBasicMaterial transparent attach="material" map={useLoader(THREE.TextureLoader, img)}  />
+    <Edges linewidth={2} color={props.color} />
   </Circle>
   )
 }
@@ -60,6 +61,7 @@ function Ambiance() {
 
 function Wheel() {
   const wheelRef = useRef(null)
+  const [wheelText, setWheelText] = useState("")
   const [wheelSpeed, setWheelspeed] = useState(null)
   const [prev, setPrev] = useState(null)
   const [direction, setDirection] = useState(null)
@@ -69,7 +71,7 @@ function Wheel() {
     id: 1,
     src: skills,
     url: "/skills",
-    desc: "SKills",
+    desc: "Skills",
   },
   {
     id: 2,
@@ -124,8 +126,10 @@ function Wheel() {
   const { viewport, size } = useThree()
   const radius = viewport.width <= 5.5 ? (viewport.width * 0.3) : 2;
   const radian_interval = (2.0 * Math.PI) / images.length;
+  const target = new THREE.Vector3()
 
   const bind = useDrag((state) => {
+    
     if(state.first){
       setPrev(0)
       setWheelspeed(null)
@@ -144,7 +148,23 @@ function Wheel() {
     
     wheelRef.current.children.forEach((b,i)=> {
       b.rotation.z = -wheelRef.current.rotation.z //found this by mistake but i'm gonna keep it, it keeps the icons straight  
+      b.getWorldPosition(target)
+      if(target.y > 0 && target.x > -0.5 && target.x < 0.5){
+        setWheelText(b.name)
+      }
+      
+      
+      
     })
+
+    // plays tick sound when wheel spins
+    const wheelCurrAngle = Math.round((wheelRef.current.rotation.z * (180 / Math.PI)) / 45) * 45 
+    if(((wheelCurrAngle % 45) === 0) && (wheelCurrAngle !== currAngle)){
+
+      playTick()
+      //console.log(wheelCurrAngle)
+      setCurrAngle(wheelCurrAngle)
+    }
     setPrev(radians)
     
     if(state.last){
@@ -161,9 +181,15 @@ function Wheel() {
       wheelRef.current.children.forEach((b)=> {
         if(direction === 1){
         b.rotation.z +=(wheelSpeed * delta)
-      }else{
+        }else{
         b.rotation.z -=(wheelSpeed * delta)
+        }
+
+        b.getWorldPosition(target)
+      if(target.y > 0 && target.x > -0.5 && target.x < 0.5){
+        setWheelText(b.name)
       }
+
       })
       if(direction === 1){
         wheelRef.current.rotation.z -= wheelSpeed * delta
@@ -176,6 +202,7 @@ function Wheel() {
       if(((wheelCurrAngle % 45) === 0) && (wheelCurrAngle !== currAngle)){
 
         playTick()
+        //console.log(wheelCurrAngle)
         setCurrAngle(wheelCurrAngle)
       }
       
@@ -188,8 +215,11 @@ function Wheel() {
     <group ref={wheelRef} {...bind()}>
         {images.map((url, i) => {
         return(
-          <Item key={"item-"+i} img={url.src} scale={viewport.width <= 5.5 ? viewport.width * 0.09 : 0.6 } index={"item-"+i} position={[(Math.cos(radian_interval * i) * radius), (Math.sin(radian_interval * i) * radius), 0]}  />
+          <Item key={"item-"+i} color={wheelText === url.desc ? "#e77777": "#808080"} name={url.desc} img={url.src} scale={viewport.width <= 5.5 ? viewport.width * 0.09 : 0.6 } index={"item-"+i} position={[(Math.cos(radian_interval * i) * radius), (Math.sin(radian_interval * i) * radius), 0]}  />
         )})}
+        <Text color="black" scale={[0.4,0.4,0.4]} >
+        {wheelText}
+      </Text>
     </group>
   )
 }
