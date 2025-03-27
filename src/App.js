@@ -128,9 +128,6 @@ function Wheel() {
   const radian_interval = (2.0 * Math.PI) / images.length;
   const target = new THREE.Vector3()
 <<<<<<< HEAD
-
-=======
-  
 >>>>>>> 96b98843122ae8f4660c54c72b870514b81b3fc1
   const bind = useDrag((state) => {
     
