@@ -98,7 +98,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     src: info,
     url: "/info",
     desc: "About Poject",
-    position:[-20, 10 + (GOLDENRATIO/2), -20+6],
+    position:[-20, 10, -20+3],
     quaternion:[0,0,0,5],
   }
   ,
