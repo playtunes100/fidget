@@ -74,8 +74,8 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     src: skills,
     url: "/skills",
     desc: "Skills",
-    position:[20, -20 + (GOLDENRATIO/2), -20+6],
-    quaternion:[0,0,0,5],
+    position:[20, -20 , -20],
+    quaternion:[-0.707,0,0,0.707],
   },
   {
     id: 2,
@@ -205,6 +205,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     }
   })
 
+  
   //keeps the wheel rotating after mouse/pointer event ends
   useFrame((_,delta) => {
     if(wheelSpeed && wheelSpeed > 0.0001){
@@ -241,9 +242,9 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
       setWheelspeed(newSpeed)
     }
     //
-
     easing.damp3(_.camera.position, menu_target, 0.6, delta)
     easing.dampQ(_.camera.quaternion, menu_q, 0.4, delta)
+
     
 
   })
@@ -262,7 +263,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
 }
 
 
-function App() {  
+function App() {
   return (
     <Canvas scroll="false"  >
       <Stats showPanel={0} className="stats" />
@@ -270,14 +271,14 @@ function App() {
       <Clouds material={THREE.MeshBasicMaterial} >
         <Cloud segments={40} bounds={[20, 1, 2]} speed={0.1} growth={10} volume={10} color="#c5d7e6" position={[0,-10,-20]} />
         <Cloud segments={40} bounds={[30, 1, 2]} speed={0.5} growth={10} volume={10} color="white" position={[0,10,-20]} />
-        <Cloud segments={40} bounds={[2, 1, 20]} speed={0.1} growth={5} volume={5} color="#c5d7e6" position={[0,0,-20]} />
       </Clouds>
       <Ambiance />
-      <Box color={"red"} position={[-20, 10, -20]} scale={4}> 
-      <meshBasicMaterial color={"red"} />
-     </Box>
       <Wheel className={"wheel"} position={[0,0,0]} />
-      <Petri position={[20, -20, -20]} scale={10}/>
+      <Box color={"red"} position={[-20, 10, -20]} scale={1}> 
+        <meshBasicMaterial color={"red"} />
+      </Box>
+      <Petri position={[10, -40, -30]} />
+      
     </Canvas>
   );
 }

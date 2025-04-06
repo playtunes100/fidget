@@ -1,53 +1,22 @@
 
-import { RoundedBox } from '@react-three/drei'
+import {useThree} from '@react-three/fiber'
+import { Gltf, useAspect } from '@react-three/drei'
+import petriModel from '../assets/models/petri_box.gltf'
+import { useEffect, useRef } from 'react'
 
 export default function Petri({ ...props }) {
-  
+  const { size} = useThree()
+  const petriRef = useRef()
+  const screenScale = useAspect(size.width/6,size.height/6)
+  useEffect(()=> {
+    petriRef.current.scale.x = screenScale[0]
+    petriRef.current.scale.y = screenScale[2]
+    petriRef.current.scale.z = screenScale[1]
+  }, [screenScale])
+ 
   return (
-          <group name="petri" position={props.position} scale={props.scale} rotation={props.rotation}>
-            <RoundedBox
-            castShadow
-            receiveShadow
-            position={[0, 0, 157.83]}
-            rotation={[-Math.PI / 2, Math.PI / 2, 0]}
-            >
-            <meshPhongMaterial color="#f3f3f3" />
-            </RoundedBox>
-
-            <RoundedBox
-            castShadow
-            receiveShadow
-            position={[0, 0, -157.83]}
-            rotation={[-Math.PI / 2, Math.PI / 2, 0]}
-            >
-            <meshPhongMaterial color="#f3f3f3" />
-            </RoundedBox>
-            
-            <RoundedBox
-            castShadow
-            receiveShadow
-            position={[-156.2, 0, 0]}
-            rotation={[0, 0, -Math.PI / 2]}
-            >
-            <meshPhongMaterial color="#f3f3f3" />
-            </RoundedBox>
-
-            <RoundedBox
-            castShadow
-            receiveShadow
-            position={[157.83, 0, 0]}
-            rotation={[0, 0, -Math.PI / 2]}
-            
-            >
-            <meshPhongMaterial color="#f3f3f3" />
-            </RoundedBox>
-
-            <RoundedBox
-            castShadow
-            receiveShadow
-            position={[0.81, -11.98, 0]}
-            >
-            <meshPhongMaterial color="#f3f3f3" />
-            </RoundedBox>
-          </group>)
+          <Gltf ref={petriRef} src={petriModel} { ...props } >
+            <meshStandardMaterial metalness={0.5} roughness={0.5} envMapIntensity={2} color={'#d9dadb'}/>
+          </Gltf>
+        )
 }
