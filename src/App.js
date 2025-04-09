@@ -2,7 +2,7 @@ import './App.css';
 import * as THREE from 'three'
 import { useState ,useRef, useEffect} from 'react'
 import { Canvas, useThree, useFrame,  useLoader} from '@react-three/fiber'
-import { Sky, Clouds, Cloud, PositionalAudio, Box, Circle, Text, Stats} from '@react-three/drei'
+import { Sky, SpotLight, Clouds, Cloud, PositionalAudio, Circle, Text, Stats} from '@react-three/drei'
 import { useDrag } from '@use-gesture/react'
 import useSound from 'use-sound'
 import { easing } from 'maath'
@@ -20,9 +20,11 @@ import pause from './assets/images/pause.png'
 import tick from './assets/sounds/tick-sound.mp3'
 import forest from './assets/sounds/forest.ogg'
 
-import Petri from './components/Petri'
+import myresume from './assets/images/myresume.png'
 
-const GOLDENRATIO = 1.61803398875
+import Petri from './components/Petri'
+import Cube from './components/Cube'
+import MyResume from './components/MyResume';
 
 function Item({ index, position, img, scale, ...props }){
   // This reference gives us direct access to the THREE.Mesh object
@@ -74,8 +76,9 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     src: skills,
     url: "/skills",
     desc: "Skills",
-    position:[20, -20 , -20],
+    position:[30, -40 , -30],
     quaternion:[-0.707,0,0,0.707],
+    target:"Skills Object",
   },
   {
     id: 2,
@@ -84,6 +87,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     desc: "About Me",
     position:[0,0,-35],
     quaternion:[0,0,0,5],
+    target:"About Me Object",
   },
   {
     id: 3,
@@ -92,14 +96,16 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     desc: "Home",
     position:[0,0,5],
     quaternion:[0,0,0,5],
+    target:"Home Object",
   },
   {
     id: 4,
     src: info,
     url: "/info",
     desc: "About Poject",
-    position:[-20, 10, -20+3],
+    position:[-20, 10, -20],
     quaternion:[0,0,0,5],
+    target:"About Project Object",
   }
   ,
   {
@@ -109,6 +115,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     desc: "CV",
     position:[0,0,5],
     quaternion:[0,0,0,5],
+    target:"CV Object",
   },
   {
     id: 6,
@@ -117,6 +124,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     desc: "Contact Me",
     position:[0,0,5],
     quaternion:[0,0,0,5],
+    target:"Contact Me Object",
   },
   {
     id: 7,
@@ -125,6 +133,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     desc: "GitHub",
     position:[0,0,5],
     quaternion:[0,0,0,5],
+    target:"Github Object",
   },
   {
     id: 8,
@@ -133,6 +142,7 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     desc: "Projects",
     position:[0,0,5],
     quaternion:[0,0,0,5],
+    target:"Project Object",
   }
   ,
 ])
@@ -141,14 +151,11 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
     volume: 0.5,
   })
 
-  
-
-
   const { viewport, size } = useThree()
   const radius = viewport.width <= 5.5 ? (viewport.width * 0.3) : 2;
   const radian_interval = (2.0 * Math.PI) / images.length;
   const target = new THREE.Vector3()
-  
+
   const [selected, setSelected] = useState(false)
   useEffect(() => {
     const target_position = images.find((e)=> e.desc === wheelText)
@@ -204,7 +211,6 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
       
     }
   })
-
   
   //keeps the wheel rotating after mouse/pointer event ends
   useFrame((_,delta) => {
@@ -242,10 +248,19 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
       setWheelspeed(newSpeed)
     }
     //
-    easing.damp3(_.camera.position, menu_target, 0.6, delta)
-    easing.dampQ(_.camera.quaternion, menu_q, 0.4, delta)
-
-    
+    if(selected){
+      const target_obj = images.find((e)=> e.desc === wheelText)
+      const target = _.scene.getObjectByName(target_obj.target)
+   
+      const newPosition = target ? [target.position.x, target.quaternion.w === 1 ? target.position.y + (viewport.height * 2.5) : target.position.y, target.quaternion.w < 1 ? target.position.z + (viewport.height * 0.8) : target.position.z]: [0, 0, 5]
+      easing.damp3(_.camera.position, newPosition, 0.6, delta)
+      easing.dampQ(_.camera.quaternion, menu_q, 0.4, delta)
+      
+    }
+    else{
+      easing.damp3(_.camera.position, menu_target, 0.6, delta)
+      easing.dampQ(_.camera.quaternion, menu_q, 0.4, delta)
+     }
 
   })
   return (
@@ -257,10 +272,10 @@ function Wheel({menu_target = new THREE.Vector3(0,0,5), menu_q = new THREE.Quate
         <Text color="black" scale={viewport.width <= 5.5 ? viewport.width * 0.06 : 0.4 } onClick={(e) => (e.stopPropagation(),setSelected(true))} onPointerMissed={() => (setSelected(false))}>
           {wheelText}
         </Text>
-        
     </group>
   )
 }
+
 
 
 function App() {
@@ -269,16 +284,16 @@ function App() {
       <Stats showPanel={0} className="stats" />
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
       <Clouds material={THREE.MeshBasicMaterial} >
-        <Cloud segments={40} bounds={[20, 1, 2]} speed={0.1} growth={10} volume={10} color="#c5d7e6" position={[0,-10,-20]} />
-        <Cloud segments={40} bounds={[30, 1, 2]} speed={0.5} growth={10} volume={10} color="white" position={[0,10,-20]} />
+        <Cloud bounds={[20, 1, 2]} speed={0.1} growth={10} volume={10} color="#c5d7e6" position={[0,-10,-20]} />
+        <Cloud bounds={[30, 1, 2]} speed={0.5} growth={10} volume={10} color="white" position={[0,10,-30]} />
       </Clouds>
       <Ambiance />
       <Wheel className={"wheel"} position={[0,0,0]} />
-      <Box color={"red"} position={[-20, 10, -20]} scale={1}> 
-        <meshBasicMaterial color={"red"} />
-      </Box>
-      <Petri position={[10, -40, -30]} />
-      
+      <Cube name='About Project Object' color={"red"} position={[-20, 10, -20]} rotation={[Math.PI / 2,0,0]}/>
+      <Petri name='Skills Object' position={[30, -40, -30]} />
+      <MyResume name='CV Object' url={myresume} position={[0, -10, -30]} rotation={[Math.PI / 2,0,0]}/>
+      <SpotLight distance={50} angle={-Math.PI} attenuation={5} anglePower={5} position={[30, -20, -30]}/>
+    
     </Canvas>
   );
 }
