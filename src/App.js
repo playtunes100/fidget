@@ -2,7 +2,7 @@ import './App.css';
 import * as THREE from 'three'
 import { useState ,useRef, useEffect} from 'react'
 import { Canvas, useThree, useFrame,  useLoader} from '@react-three/fiber'
-import { Sky, SpotLight, Clouds, Cloud, PositionalAudio, Circle, Text, Stats} from '@react-three/drei'
+import { Sky, Clouds, Cloud, PositionalAudio, Circle, Text, Stats} from '@react-three/drei'
 import { useDrag } from '@use-gesture/react'
 import useSound from 'use-sound'
 import { easing } from 'maath'
@@ -21,10 +21,10 @@ import tick from './assets/sounds/tick-sound.mp3'
 import forest from './assets/sounds/forest.ogg'
 
 import myresume from './assets/images/myresume.png'
-
-import Petri from './components/Petri'
 import Cube from './components/Cube'
-import MyResume from './components/MyResume';
+import MyResume from './components/MyResume'
+import ComputerPortal from './components/ComputerPortal';
+import Petri from './components/Petri'
 
 function Item({ index, position, img, scale, ...props }){
   // This reference gives us direct access to the THREE.Mesh object
@@ -285,15 +285,14 @@ function App() {
       <Sky distance={80} elevation={1.2} sunPosition={[0, 45, 0]} inclination={-0.001} azimuth={180} />
       <Clouds material={THREE.MeshBasicMaterial} >
         <Cloud bounds={[20, 1, 2]} speed={0.1} growth={10} volume={10} color="#c5d7e6" position={[0,-10,-20]} />
-        <Cloud bounds={[30, 1, 2]} speed={0.5} growth={10} volume={10} color="white" position={[0,10,-30]} />
       </Clouds>
       <Ambiance />
       <Wheel className={"wheel"} position={[0,0,0]} />
-      <Cube name='About Project Object' color={"red"} position={[-20, 10, -20]} rotation={[Math.PI / 2,0,0]}/>
-      <Petri name='Skills Object' position={[30, -40, -30]} />
+      <Cube name='About Project Object' color={"#d4a6e3"} position={[-20, 10, -20]} rotation={[Math.PI / 2,0,0]}/>
+      
       <MyResume name='CV Object' url={myresume} position={[0, -10, -30]} rotation={[Math.PI / 2,0,0]}/>
-      <SpotLight distance={50} angle={-Math.PI} attenuation={5} anglePower={5} position={[30, -20, -30]}/>
-    
+      <ComputerPortal name='About Me Object' position={[20, 10, -30]} rotation={[Math.PI / 2, 0, 0]}/>
+      <Petri name='Skills Object' position={[30, -40, -30]} />
     </Canvas>
   );
 }

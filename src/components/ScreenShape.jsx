@@ -14,7 +14,7 @@ export default function ScreenShape({children, ...props}) {
   }, [screenScale])
  
   return (
-          <group ref={shapeRef} { ...props }>
+          <group ref={shapeRef} { ...props } >
             {children}
           </group>
         )
